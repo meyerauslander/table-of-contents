@@ -6,6 +6,10 @@ Version: 1.0
 Author: Meyer Auslander 
 */
 
+$dir = plugin_dir_path( __FILE__ );
+$include_path = "$dir/includes/";
+include "$include_path" . "toc-admin.php";    //page in admin for "TOC Manager"
+
 class tstn_toc_widget extends WP_Widget {
 
     function __construct() {
@@ -36,7 +40,21 @@ class tstn_toc_widget extends WP_Widget {
         echo $args['before_widget'];
         $cont=get_the_content();  //get content to check for toc tags.  The logic here will need to be modified to accommodate a page that has not toc tags but does have html tags that were specified to automatically be included in the toc
         if ( is_single() && strpos( $cont, "trst_toc_heading")){ //only produce output for single posts that have toc tags
-              echo $args['before_title'] . $title . $args['after_title'];
+            echo $args['before_title'] . $title . $args['after_title'];
+            //output the html tags into a java script so they can be accessed by toc.js
+            $tags_1=get_option('maus_toc_html_tags_1');
+            if ( !(empty($tags_1))){
+                $tags_1_array = explode(",", $tags_1);
+                $output_script = "<script>var tags_1 = [";
+                foreach ($tags_1_array as $tag){ 
+                    $tag = str_replace(' ', '', $tag);
+                    $tag = strtoupper($tag);    //in javascript all the tag names are uppercase
+                    $output_script .= "'" . $tag . "', ";
+                }
+                $output_script .= "];</script>";
+                $output_script = str_replace( ', ]', ']', $output_script ); //remove the extra comma at the end
+                echo $output_script;
+            } else echo "<script>var tags_1 = [''];</script>"; //no tags are specified
         }      
         echo __( '<ul class="tstn_toc_list widget_nav_menu"></ul>', 'toc_widget_domain' );
         echo $args['after_widget']; 
