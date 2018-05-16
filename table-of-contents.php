@@ -36,11 +36,35 @@ class tstn_toc_widget extends WP_Widget {
     }
     
     public function widget( $args, $instance ) {
+        $classes_1=get_option('maus_toc_classes_1');
+        $classes_2=get_option('maus_toc_classes_2');
+        $has_classes=false;
+        
         $title = apply_filters( 'widget_title', $instance['title'] );
         echo $args['before_widget'];
-        $cont=get_the_content();  //get content to check for toc tags.  The logic here will need to be modified to accommodate a page that has not toc tags but does have html tags that were specified to automatically be included in the toc
-        if ( is_single() && strpos( $cont, "trst_toc_heading")){ //only produce output for single posts that have toc tags
+        $cont=get_the_content();  //get content to check for toc tags.
+        
+        //check if it has any toc classes if so set $has_classes
+        if ( !(empty($classes_1)) ){
+            $classes_1_array = explode(",", $classes_1);
+            foreach ($classes_1_array as $class){
+                if ($has_classes=strpos( $cont, $class)){
+                    break;
+                }
+            }
+        }
+        if (!$has_classes && !(empty($classes_2) )){//it may only have subclasses 
+            $classes_2_array = explode(",", $classes_2);
+            foreach ($classes_2_array as $class){
+                if ($has_classes=strpos( $cont, $class)){
+                    break;
+                }
+            }
+        }
+            
+        if ( is_single() && $has_classes){ //only produce output for single posts that have toc tags
             echo $args['before_title'] . $title . $args['after_title'];
+            
             //output the html tags into a java script so they can be accessed by toc.js
             $tags_1=get_option('maus_toc_html_tags_1');
             if ( !(empty($tags_1))){
@@ -55,6 +79,33 @@ class tstn_toc_widget extends WP_Widget {
                 $output_script = str_replace( ', ]', ']', $output_script ); //remove the extra comma at the end
                 echo $output_script;
             } else echo "<script>var tags_1 = [''];</script>"; //no tags are specified
+            
+            //output the heading class names into a java script so they can be accessed by toc.js
+            if ( !(empty($classes_1))){           
+                $output_script = "<script>var classes_1 = [";
+                foreach ($classes_1_array as $class){ 
+                    $class = str_replace(' ', '', $class);
+                    $output_script .= "'" . $class . "', ";
+                }
+                $output_script .= "];</script>";
+                $output_script = str_replace( ', ]', ']', $output_script ); //remove the extra comma at the end
+                echo $output_script;
+            } else echo "<script>var classes_1 = [''];</script>"; //no class names are specified
+            
+            //output the sub heading class names into a java script so they can be accessed by toc.js
+            if ( !(empty($classes_2))){           
+                $output_script = "<script>var classes_2 = [";
+                if ( empty($classes_2_array) )
+                    $classes_2_array = explode(",", $classes_2);
+                foreach ($classes_2_array as $class){ 
+                    $class = str_replace(' ', '', $class);
+                    $output_script .= "'" . $class . "', ";
+                }
+                $output_script .= "];</script>";
+                $output_script = str_replace( ', ]', ']', $output_script ); //remove the extra comma at the end
+                echo $output_script;
+            } else echo "<script>var classes_2 = [''];</script>"; //no class names are specified
+           
         }      
         echo __( '<ul class="tstn_toc_list widget_nav_menu"></ul>', 'toc_widget_domain' );
         echo $args['after_widget']; 

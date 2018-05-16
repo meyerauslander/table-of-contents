@@ -39,7 +39,7 @@ class maus_toc_info_manager {
         if ( empty($first_update) ) { //set defaults if the admin did not yet make any updates
             $tags_1         = "h1";
             $tags_2         = "h2, h3, h4, strong";
-            $classes        = "toc_heading_1, toc1";   
+            $classes_1      = "toc_heading_1, toc1";   
             $classes_2    = "toc_heading_2, toc2";
             $remove_class   = "toc_delete";
         }
@@ -67,7 +67,7 @@ class maus_toc_info_manager {
         }  elseif ( $_GET['status'] == 'success' && $_GET['request']=='classes_1' ){
             ?>
             <div id="message" class="updated notice is-dismissible">
-                <p><?php _e( "Class name settings updated to $classes_1", "maus-toc" ); ?></p>
+                <p><?php _e( "Class name settings updated to '$classes_1'.", "maus-toc" ); ?></p>
                 <button type="button" class="notice-dismiss">
                     <span class="screen-reader-text"><?php _e( "Dismiss this notice.", "maus-toc" ); ?></span>
                 </button>
@@ -82,16 +82,16 @@ class maus_toc_info_manager {
                 </button>
             </div>
             <?php
-        }   elseif ( $_GET['status'] == 'success' && $_GET['request']=='subclasses' ){
+        }   elseif ( $_GET['status'] == 'success' && $_GET['request']=='classes_2' ){
             ?>
             <div id="message" class="updated notice is-dismissible">
-                <p><?php _e( "Sub Class name settings updated to $classes_2", "maus-toc" ); ?></p>
+                <p><?php _e( "Sub class name settings updated to '$classes_2'.", "maus-toc" ); ?></p>
                 <button type="button" class="notice-dismiss">
                     <span class="screen-reader-text"><?php _e( "Dismiss this notice.", "maus-toc" ); ?></span>
                 </button>
             </div>
             <?php
-        }  elseif ( $_GET['status'] == 'error' && $_GET['request']=='subclasses' ){
+        }  elseif ( $_GET['status'] == 'error' && $_GET['request']=='classes_2' ){
             ?>
             <div id="message" class="updated error notice is-dismissible">
                 <p><?php _e( "Error: Couldn't update sub classes.", "maus-toc" ); ?></p>
@@ -108,12 +108,12 @@ class maus_toc_info_manager {
 -->
 <!--        html tags-->
         <form method="post" action="<?php echo admin_url( 'admin-post.php' ); ?>">
-
             <input type="hidden" name="action" value="update_settings"/>
-
-            <h3><?php _e( "HTML tags to indicate headings", "maus-toc" ); ?></h3>
+            <input type="hidden" name="setting_type" value="html1"/>
+             <h3><?php _e( "HTML tags to indicate headings", "maus-toc" ); ?></h3>
             <p>
-                <label><?php _e( "List tag names separated by a comma", "maus-toc" ); ?></label>
+                <label><?php _e( "List tag names separated by a comma<br>
+                                  (ex. h1, h2)", "maus-toc" ); ?></label>
                 <input class="regular-text" type="text" name="html_tags_1" value="<?php echo $tags_1; ?>"/>
             </p>
             <p>
@@ -122,26 +122,87 @@ class maus_toc_info_manager {
                     _e( "Current Tag Settings are: $tags_1", "maus-toc" );
                 ?>
             </p>
-
             <input class="button button-primary" type="submit" value="<?php _e( "Save", "maus-toc" ); ?>"/>
-        </form><br>
-<!--        classes-->
+            <a href="<?php echo get_bloginfo( "url" ); ?>">Visit Site</a>
+        </form><br><br>
+<!--        classes--heading-->
+        <form method="post" action="<?php echo admin_url( 'admin-post.php' ); ?>">
+            <input type="hidden" name="action" value="update_settings"/>
+            <input type="hidden" name="setting_type" value="classes1"/>
+             <h3><?php _e( "Class names to indicate headings", "maus-toc" ); ?></h3>
+            <p>
+                <label><?php _e( "List class names separated by a comma<br>
+                                  (ex. toc1, toc)", "maus-toc" ); ?></label>
+                <input class="regular-text" type="text" name="classes_1" value="<?php echo $classes_1; ?>"/>
+            </p>
+            <p>
+                <?php
+                    $classes_1 = ( $classes_1 != '' ) ? $classes_1 : "No class names have been specified.";  
+                    _e( "Current Tag Settings are: $classes_1", "maus-toc" );
+                ?>
+            </p>
+            <input class="button button-primary" type="submit" value="<?php _e( "Save", "maus-toc" ); ?>"/>
+            <a href="<?php echo get_bloginfo( "url" ); ?>">Visit Site</a>
+        </form><br><br>
         
+        <!--        classes--sub heading-->
+        <form method="post" action="<?php echo admin_url( 'admin-post.php' ); ?>">
+            <input type="hidden" name="action" value="update_settings"/>
+            <input type="hidden" name="setting_type" value="classes2"/>
+             <h3><?php _e( "Class names to indicate sub headings (indented)", "maus-toc" ); ?></h3>
+            <p>
+                <label><?php _e( "List sub class names separated by a comma<br>
+                                  (ex. toc2, toc_indent)", "maus-toc" ); ?></label>
+                <input class="regular-text" type="text" name="classes_2" value="<?php echo $classes_2; ?>"/>
+            </p>
+            <p>
+                <?php
+                    $classes_2 = ( $classes_2 != '' ) ? $classes_2 : "No sub class names have been specified.";  
+                    _e( "Current Tag Settings are: $classes_2", "maus-toc" );
+                ?>
+            </p>
+            <input class="button button-primary" type="submit" value="<?php _e( "Save", "maus-toc" ); ?>"/>
+            <a href="<?php echo get_bloginfo( "url" ); ?>">Visit Site</a>
+        </form><br>
         <?php
     } //end of adminUI function
 
     //seve the entered information and vailidate it through the My zmanim API
     public function save_settings() {
+        $type=$_POST["setting_type"];
         $first_update = get_option('maus_toc_updated');
         // Get the tag settings to update
-        $tags_1 = ( ! empty( $_POST["html_tags_1"] ) ) ? $_POST["html_tags_1"] : null;
+        switch($type) {
+            case 'html1';
+                $update = ( ! empty( $_POST["html_tags_1"] ) ) ? $_POST["html_tags_1"] : null;
+                // Update the html tag settings in the database
+                update_option( "maus_toc_html_tags_1", $update, true );
+                $status_url="request=htmltags1&status=success";
+            break; 
+            case 'classes1';
+                $update = ( ! empty( $_POST["classes_1"] ) ) ? $_POST["classes_1"] : null;
+                // Update the headline class settings in the database
+                update_option( "maus_toc_classes_1", $update, true );
+                $status_url="request=classes_1&status=success";
+            break;
+
+            case 'classes2';
+                $update = ( ! empty( $_POST["classes_2"] ) ) ? $_POST["classes_2"] : null;
+                // Update the html subheadline class settings in the database
+                update_option( "maus_toc_classes_2", $update, true );
+                $status_url="request=classes_2&status=success";
+            break;
+
+            default:
+                echo "Error: invalid setting type.<br>";
+            break;
+        }         
         
-        // Update the html tag settings in the database
-        update_option( "maus_toc_html_tags_1", $tags_1, true );
-    
+        //first update has been requested
         if ( ! ($first_update = get_option('maus_toc_updated'))) update_option( "maus_toc_updated", true, true );
+        
         // Redirect back to settings page
-        $redirect_url = get_bloginfo( "url" ) . "/wp-admin/options-general.php?page=maus-toc-manager&request=htmltags1&status=success";
+        $redirect_url = get_bloginfo( "url" ) . "/wp-admin/options-general.php?page=maus-toc-manager&$status_url";
         header( "Location: " . $redirect_url );
         exit;
     } //end of function save tag settings
