@@ -119,7 +119,7 @@ class maus_toc_info_manager {
             <p>
                 <?php
                     $tags_1 = ( $tags_1 != '' ) ? $tags_1 : "No tags have been specified.";  
-                    _e( "Current Tag Settings are: $tags_1", "maus-toc" );
+                    _e( "Current tag settings are: <span style='color: green; font-size: 16px'>$tags_1</span>", "maus-toc" );
                 ?>
             </p>
             <input class="button button-primary" type="submit" value="<?php _e( "Save", "maus-toc" ); ?>"/>
@@ -138,7 +138,7 @@ class maus_toc_info_manager {
             <p>
                 <?php
                     $classes_1 = ( $classes_1 != '' ) ? $classes_1 : "No class names have been specified.";  
-                    _e( "Current Tag Settings are: $classes_1", "maus-toc" );
+                    _e( "Current class name settings for headings are: <span style='color: green; font-size: 16px'>$classes_1</span>", "maus-toc" );
                 ?>
             </p>
             <input class="button button-primary" type="submit" value="<?php _e( "Save", "maus-toc" ); ?>"/>
@@ -151,14 +151,14 @@ class maus_toc_info_manager {
             <input type="hidden" name="setting_type" value="classes2"/>
              <h3><?php _e( "Class names to indicate sub headings (indented)", "maus-toc" ); ?></h3>
             <p>
-                <label><?php _e( "List sub class names separated by a comma<br>
+                <label><?php _e( "List sub heading class names separated by a comma<br>
                                   (ex. toc2, toc_indent)", "maus-toc" ); ?></label>
                 <input class="regular-text" type="text" name="classes_2" value="<?php echo $classes_2; ?>"/>
             </p>
             <p>
                 <?php
-                    $classes_2 = ( $classes_2 != '' ) ? $classes_2 : "No sub class names have been specified.";  
-                    _e( "Current Tag Settings are: $classes_2", "maus-toc" );
+                    $classes_2 = ( $classes_2 != '' ) ? $classes_2 : "No class names have been specified.";  
+                    _e( "Current class name settings for sub headings are: <span style='color: green; font-size: 16px'>$classes_2</span>", "maus-toc" );
                 ?>
             </p>
             <input class="button button-primary" type="submit" value="<?php _e( "Save", "maus-toc" ); ?>"/>

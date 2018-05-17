@@ -41,7 +41,6 @@ class tstn_toc_widget extends WP_Widget {
         $has_classes=false;
         
         $title = apply_filters( 'widget_title', $instance['title'] );
-        echo $args['before_widget'];
         $cont=get_the_content();  //get content to check for toc tags.
         
         //check if it has any toc classes if so set $has_classes
@@ -65,6 +64,7 @@ class tstn_toc_widget extends WP_Widget {
         }
             
         if ( is_single() && $has_classes){ //only produce output for single posts that have toc tags
+            echo $args['before_widget'];
             echo $args['before_title'] . $title . $args['after_title'];
             
             //output the html tags into a java script so they can be accessed by toc.js
@@ -107,11 +107,17 @@ class tstn_toc_widget extends WP_Widget {
                 $output_script = str_replace( ', ]', ']', $output_script ); //remove the extra comma at the end
                 echo $output_script;
             } else echo "<script>var classes_2 = [];</script>"; //no class names are specified
-           
-        }      
-        echo __( '<ul class="tstn_toc_list widget_nav_menu"></ul>', 'toc_widget_domain' );
-        echo $args['after_widget']; 
-    }
+            
+            echo __( '<ul class="tstn_toc_list widget_nav_menu"></ul>', 'toc_widget_domain' );
+            echo $args['after_widget'];  
+        }  //end of widget output  
+        else { //output empty arrays in order to avoid java script errors in the console
+            echo "<script>  var tags_1 = [];
+                            var classes_1 = [];
+                            var classes_2 = [];
+                  </script>";
+        }
+    } //end of widget function
 
     public function form( $instance ) {
         if ( isset( $instance[ 'title' ] ) )

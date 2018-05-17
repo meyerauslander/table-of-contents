@@ -4,8 +4,6 @@
 //2.  Appends a link to the toc widget for every such element.
 (function($) { jQuery(document).ready(function(){
     var count = 0;  //heading count (used to give each a unique id)
-    var class_name1 = "trst_toc_heading_1";
-    var class_name2 = "trst_toc_heading_22";
     $('.post *').each(function(){
         var class1 = false;
         var class2 = false;
