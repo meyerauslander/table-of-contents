@@ -48,6 +48,7 @@ class tstn_toc_widget extends WP_Widget {
         if ( !(empty($classes_1)) ){
             $classes_1_array = explode(",", $classes_1);
             foreach ($classes_1_array as $class){
+                $class = str_replace(' ', '', $class); //trim out whitespaces
                 if ($has_classes=strpos( $cont, $class)){
                     break;
                 }
@@ -56,6 +57,7 @@ class tstn_toc_widget extends WP_Widget {
         if (!$has_classes && !(empty($classes_2) )){//it may only have subclasses 
             $classes_2_array = explode(",", $classes_2);
             foreach ($classes_2_array as $class){
+                $class = str_replace(' ', '', $class); //trim out whitespaces
                 if ($has_classes=strpos( $cont, $class)){
                     break;
                 }
