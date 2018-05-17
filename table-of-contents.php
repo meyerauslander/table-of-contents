@@ -80,7 +80,7 @@ class tstn_toc_widget extends WP_Widget {
                 $output_script .= "];</script>";
                 $output_script = str_replace( ', ]', ']', $output_script ); //remove the extra comma at the end
                 echo $output_script;
-            } else echo "<script>var tags_1 = [''];</script>"; //no tags are specified
+            } else echo "<script>var tags_1 = [];</script>"; //no tags are specified
             
             //output the heading class names into a java script so they can be accessed by toc.js
             if ( !(empty($classes_1))){           
@@ -92,7 +92,7 @@ class tstn_toc_widget extends WP_Widget {
                 $output_script .= "];</script>";
                 $output_script = str_replace( ', ]', ']', $output_script ); //remove the extra comma at the end
                 echo $output_script;
-            } else echo "<script>var classes_1 = [''];</script>"; //no class names are specified
+            } else echo "<script>var classes_1 = [];</script>"; //no class names are specified
             
             //output the sub heading class names into a java script so they can be accessed by toc.js
             if ( !(empty($classes_2))){           
@@ -106,7 +106,7 @@ class tstn_toc_widget extends WP_Widget {
                 $output_script .= "];</script>";
                 $output_script = str_replace( ', ]', ']', $output_script ); //remove the extra comma at the end
                 echo $output_script;
-            } else echo "<script>var classes_2 = [''];</script>"; //no class names are specified
+            } else echo "<script>var classes_2 = [];</script>"; //no class names are specified
            
         }      
         echo __( '<ul class="tstn_toc_list widget_nav_menu"></ul>', 'toc_widget_domain' );
