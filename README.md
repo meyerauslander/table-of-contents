@@ -1,6 +1,8 @@
 # TOC (Table of Contents) Widget
 * This is a WordPress Plugin.  It displays all headlines of single-post pages in the form of links that connect to their respective places in the post.  
 
+* When clicking one of the links in the toc the page scrolls to the selected headline!
+
 * This plugin includes a settings page in the admin (TOC Manager).  It allows the admin to set html tag names that will be used to determine the toc headlines.  The admin can also specify class names which will be used to determine the toc contents (in the event one wants to include a headline that is not inside one of specified html tag names or the admin wants this headline to appear in the toc as a sub headline (indented)).   
 # Install
 Download this repo as a zip and install like any other WP plugin
@@ -25,4 +27,6 @@ Download this repo as a zip and install like any other WP plugin
 5. Create a new Pull Request
 
 # Credits
-* The php code for the widget found in 'table-of-contents.php' was based on an existing widget (see 'index.php' in the sources folder).  The Java Script for the toc widget found in 'toc.js' was based on an existing script that was written to go with 'index.php' (see 'script.js' in the sources folder).  Both pre-existing program files were provided by Shmuel Barkin.
+* The php code for the widget found in 'table-of-contents.php' was based on an existing widget (see 'index.php' in the 'sources' folder of this repository).  The Java Script for the toc widget found in 'toc.js' was based on an existing script that was written to go with 'index.php' (see 'script.js' in the sources folder).  Both pre-existing program files were provided by Shmuel Barkin.
+
+* The scrolling functionality was implemented based on a Java Script (application.js) from the Github website: https://guides.github.com/activities/hello-world.  See also the 'sources' folder of this repository.   

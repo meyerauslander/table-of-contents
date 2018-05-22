@@ -51,19 +51,42 @@
             count++;
             var headlineVal    = $(this).text();                //the heading to appear in the toc
             if ( !id ){ //it has no id
-                headlineAnchor = "trst_toc_item_" + count;       //the unique id value for this heading
+                var headlineAnchor = "trst_toc_item_" + count;       //the unique id value for this heading
                 $(this).attr('id', headlineAnchor); //set the id of this element in the post page. 
             }
             else{
                 headlineAnchor = id;
             }
             
-            if ( !class2 ){ //don't indent it
-                toclink = '<li><a href="#' + headlineAnchor + '">' + headlineVal + '</a></li>';  //set a variable for the link to this heading
+            if ( !class2 ){ //don't indent it           
+                var listLink = $('<a>') 
+                            .attr('href', '#' + headlineAnchor)
+                            .text(headlineVal)
+                            .bind('click', scrollTo);
+                var listItem = $('<li>').append(listLink);
             } else { //must be class_name2.  indent it
-                toclink = '<li style=' + '"text-indent: 25px"' + '><a href="#' + headlineAnchor + '">' + headlineVal + '</a></li>';  //set the link to this heading
+                listLink = $('<a>') 
+                            .attr('href', '#' + headlineAnchor)
+                            .text(headlineVal)
+                            .bind('click', scrollTo);
+                listItem = $('<li>').append(listLink) 
+                                    .attr('style', 'text-indent: 25px');
             }  
-            $('.tstn_toc_list').append(toclink);   //append the link for this heading in the toc widget
+            $('.tstn_toc_list').append(listItem);   //append the link for this heading in the toc widget
         }  
     });
-}) })(jQuery);
+    
+}) 
+   
+//defines the functionality that will occur when one clicks one of the toc links              
+var scrollTo = function(e) {
+    e.preventDefault();
+    var elScrollTo = $(e.target).attr('href');
+    var $el = $(elScrollTo);
+
+    $('body,html').animate({ scrollTop: $el.offset().top }, 400, 'swing', function() {
+        location.hash = elScrollTo;
+    })
+}
+
+}) (jQuery);
