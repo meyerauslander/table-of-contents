@@ -57,6 +57,8 @@
             else{
                 headlineAnchor = id;
             }
+            //add a class of trst_toc_item for the highlight item functionality
+            $(this).addClass("trst_toc_item");
             
             if ( !class2 ){ //don't indent it           
                 var listLink = $('<a>') 
@@ -76,8 +78,65 @@
         }  
     });
     
+    makeHighlights();
 }) 
    
+var makeHighlights = function(){
+  // Initalize the ToC if we're on an article page
+  if ($('.tstn_toc_list').length) {
+
+    var toc = $('.tstn_toc_list');
+    var tocOffset = toc.offset().top;
+    var tocPadding = 0;
+
+    var tocSections = $('.trst_toc_item');
+    var tocSectionOffsets = [];
+
+    // Calculates the toc section offsets, which can change as images get loaded
+    var calculateTocSections = function(){
+      tocSectionOffsets = [];
+      tocSections.each(function(index, section){
+        tocSectionOffsets.push(section.offsetTop);
+      })
+    }
+    calculateTocSections();
+    $(window).bind('load', calculateTocSections);
+
+    var highlightTocSection = function(){
+      var highlightIndex = 0;
+      $.each(tocSectionOffsets, function(index, offset){
+        if (window.scrollY > offset - tocPadding){
+          highlightIndex = index;
+        }
+      })
+      highlightIndex += 1; //because the nth child begins with 1
+      $('ul.tstn_toc_list .maus_active').removeClass('maus_active');
+      $('ul.tstn_toc_list li:nth-child(' + highlightIndex + ') a').addClass('maus_active');
+    }
+    highlightTocSection();
+
+    var didScroll = false;
+    $(window).scroll(function() {
+      didScroll = true;
+    })
+
+    setInterval(function() {
+      if (didScroll) {
+        didScroll = false;
+          
+        //this is currently not doing anything because the user is setting the widget to be fixed in wordpress
+        //in order to use this method instead update the style for maus_sticky in table-of-contents.php  
+        if (window.scrollY > tocOffset - tocPadding)
+          toc.addClass('maus_sticky');
+        else
+          toc.removeClass('maus_sticky');
+      }
+      highlightTocSection();
+    }, 100);              
+  }
+}         
+              
+              
 //defines the functionality that will occur when one clicks one of the toc links              
 var scrollTo = function(e) {
     e.preventDefault();

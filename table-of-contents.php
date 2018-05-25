@@ -38,42 +38,64 @@ class tstn_toc_widget extends WP_Widget {
     public function widget( $args, $instance ) {
         $classes_1=get_option('maus_toc_classes_1');
         $classes_2=get_option('maus_toc_classes_2');
+        $tags_1=   get_option('maus_toc_html_tags_1');
+        $highlight_color = get_option('maus_toc_highlight_color');
+        $highlight_font_size = get_option('maus_toc_highlight_font_size');
+        
+        //put a # sign for hex colors
+        if (ctype_xdigit($highlight_color)){
+            $highlight_color = '#' . $highlight_color;
+        }
+        
         $has_classes=false;
+        $has_tags=false;
         
         $title = apply_filters( 'widget_title', $instance['title'] );
-        $cont=get_the_content();  //get content to check for toc tags.
         
-        //check if it has any toc classes if so set $has_classes
-        if ( !(empty($classes_1)) ){
-            $classes_1_array = explode(",", $classes_1);
-            foreach ($classes_1_array as $class){
-                $class = str_replace(' ', '', $class); //trim out whitespaces
-                if ($has_classes=strpos( $cont, $class)){
-                    break;
+        //check for classes and tags
+        if (is_single()){
+            $cont=get_the_content();  //get content to check for toc tags.
+            //check if it has any toc classes if so set $has_classes
+            if ( !(empty($classes_1)) ){
+                $classes_1_array = explode(",", $classes_1);
+                foreach ($classes_1_array as $class){
+                    //$class = str_replace(' ', '', $class); //trim out whitespaces
+                    if ($has_classes=strpos( $cont, $class)){
+                        break;
+                    }
+                }
+            }
+            if (!$has_classes && !(empty($classes_2) )){//it may only have subclasses 
+                $classes_2_array = explode(",", $classes_2);
+                foreach ($classes_2_array as $class){
+                    //$class = str_replace(' ', '', $class); //trim out whitespaces
+                    if ($has_classes=strpos( $cont, $class)){
+                        break;
+                    }
+                }
+            }
+            if (!$has_classes && !empty($tags_1)){
+                $tags_1_array=explode(",",$tags_1);
+                foreach ($tags_1_array as $tag){
+                    //if ($has_tags=fnmatch("<$tag\b[^>]*>(.*?)</$tag>",$cont)){
+                    if ($has_tags=fnmatch("*<$tag>*</$tag>*",$cont)){
+                        break;
+                    }
                 }
             }
         }
-        if (!$has_classes && !(empty($classes_2) )){//it may only have subclasses 
-            $classes_2_array = explode(",", $classes_2);
-            foreach ($classes_2_array as $class){
-                $class = str_replace(' ', '', $class); //trim out whitespaces
-                if ($has_classes=strpos( $cont, $class)){
-                    break;
-                }
-            }
-        }
-            
-        if ( is_single() && $has_classes){ //only produce output for single posts that have toc tags
+        
+        
+        if ( $has_classes || $has_tags ){ //only produce output for single posts that have toc tags
             echo $args['before_widget'];
             echo $args['before_title'] . $title . $args['after_title'];
             
             //output the html tags into a java script so they can be accessed by toc.js
-            $tags_1=get_option('maus_toc_html_tags_1');
             if ( !(empty($tags_1))){
                 $tags_1_array = explode(",", $tags_1);
                 $output_script = "<script>var tags_1 = [";
                 foreach ($tags_1_array as $tag){ 
-                    $tag = str_replace(' ', '', $tag);
+                    //$tag = str_replace(' ', '', $tag);
                     $tag = strtoupper($tag);    //in javascript all the tag names are uppercase
                     $output_script .= "'" . $tag . "', ";
                 }
@@ -86,7 +108,7 @@ class tstn_toc_widget extends WP_Widget {
             if ( !(empty($classes_1))){           
                 $output_script = "<script>var classes_1 = [";
                 foreach ($classes_1_array as $class){ 
-                    $class = str_replace(' ', '', $class);
+                    //$class = str_replace(' ', '', $class);
                     $output_script .= "'" . $class . "', ";
                 }
                 $output_script .= "];</script>";
@@ -100,7 +122,7 @@ class tstn_toc_widget extends WP_Widget {
                 if ( empty($classes_2_array) )
                     $classes_2_array = explode(",", $classes_2);
                 foreach ($classes_2_array as $class){ 
-                    $class = str_replace(' ', '', $class);
+                    //$class = str_replace(' ', '', $class);
                     $output_script .= "'" . $class . "', ";
                 }
                 $output_script .= "];</script>";
@@ -108,7 +130,20 @@ class tstn_toc_widget extends WP_Widget {
                 echo $output_script;
             } else echo "<script>var classes_2 = [];</script>"; //no class names are specified
             
-            echo __( '<ul class="tstn_toc_list widget_nav_menu"></ul>', 'toc_widget_domain' );
+            //output the style for active links and fixed postion toc list
+            echo    "<style>
+                        a.maus_active {
+                            color: $highlight_color  !important;
+                            font-size: $highlight_font_size" . "px !important;
+                        }
+                        ul.tstn_toc_list.maus_sticky {
+                           // position: fixed;  uncomment this to make it functional
+                            top: 20px;
+                        }
+                    </style>";
+            
+            //echo an empty list (to be populated by toc.js)
+            echo '<ul class="tstn_toc_list widget_nav_menu"></ul>';
             echo $args['after_widget'];  
         }  //end of widget output  
         else { //output empty arrays in order to avoid java script errors in the console
