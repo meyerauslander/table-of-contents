@@ -39,13 +39,17 @@ class tstn_toc_widget extends WP_Widget {
         $classes_1=get_option('maus_toc_classes_1');
         $classes_2=get_option('maus_toc_classes_2');
         $tags_1=   get_option('maus_toc_html_tags_1');
+        $tags_2=   get_option('maus_toc_html_tags_2');
         $highlight_color = get_option('maus_toc_highlight_color');
         $highlight_font_size = get_option('maus_toc_highlight_font_size');
+        $highlight_offset = get_option('maus_toc_highlight_offset');
         
         //put a # sign for hex colors
         if (ctype_xdigit($highlight_color)){
             $highlight_color = '#' . $highlight_color;
         }
+        
+        if (empty($highlight_offset)) $highlight_offset=0;
         
         $has_classes=false;
         $has_tags=false;
@@ -59,8 +63,8 @@ class tstn_toc_widget extends WP_Widget {
             if ( !(empty($classes_1)) ){
                 $classes_1_array = explode(",", $classes_1);
                 foreach ($classes_1_array as $class){
-                    //$class = str_replace(' ', '', $class); //trim out whitespaces
-                    if ($has_classes=strpos( $cont, $class)){
+                    //if ($has_classes=strpos( $cont, $class)){
+                    if ($has_classes=preg_match("/<.*class=[\"\'].*\b$class\b.*[\"\'].*>/",$cont)){
                         break;
                     }
                 }
@@ -68,17 +72,24 @@ class tstn_toc_widget extends WP_Widget {
             if (!$has_classes && !(empty($classes_2) )){//it may only have subclasses 
                 $classes_2_array = explode(",", $classes_2);
                 foreach ($classes_2_array as $class){
-                    //$class = str_replace(' ', '', $class); //trim out whitespaces
-                    if ($has_classes=strpos( $cont, $class)){
+                    if ($has_classes=preg_match("/<.*class=[\"\'].*\b$class\b.*[\"\'].*>/",$cont)){
                         break;
                     }
                 }
             }
+            
             if (!$has_classes && !empty($tags_1)){
                 $tags_1_array=explode(",",$tags_1);
                 foreach ($tags_1_array as $tag){
-                    //if ($has_tags=fnmatch("<$tag\b[^>]*>(.*?)</$tag>",$cont)){
-                    if ($has_tags=fnmatch("*<$tag>*</$tag>*",$cont)){
+                    if ($has_tags=preg_match("/<\b$tag\b.*>(.*)<\/$tag>/i", $cont)){
+                        break;
+                    }
+                }
+            }
+            if (!$has_classes && !$has_tags && !empty($tags_2)){
+                $tags_2_array=explode(",",$tags_2);
+                foreach ($tags_2_array as $tag){
+                    if ($has_tags=preg_match("/<\b$tag\b.*>(.*)<\/$tag>/i", $cont)){
                         break;
                     }
                 }
@@ -95,20 +106,29 @@ class tstn_toc_widget extends WP_Widget {
                 $tags_1_array = explode(",", $tags_1);
                 $output_script = "<script>var tags_1 = [";
                 foreach ($tags_1_array as $tag){ 
-                    //$tag = str_replace(' ', '', $tag);
                     $tag = strtoupper($tag);    //in javascript all the tag names are uppercase
                     $output_script .= "'" . $tag . "', ";
                 }
                 $output_script .= "];</script>";
                 $output_script = str_replace( ', ]', ']', $output_script ); //remove the extra comma at the end
                 echo $output_script;
-            } else echo "<script>var tags_1 = [];</script>"; //no tags are specified
+            } else echo "<script>var tags_1 = [];</script>"; //no tag 1s are specified
+            if ( !(empty($tags_2))){
+                $tags_2_array = explode(",", $tags_2);
+                $output_script = "<script>var tags_2 = [";
+                foreach ($tags_2_array as $tag){ 
+                    $tag = strtoupper($tag);    //in javascript all the tag names are uppercase
+                    $output_script .= "'" . $tag . "', ";
+                }
+                $output_script .= "];</script>";
+                $output_script = str_replace( ', ]', ']', $output_script ); //remove the extra comma at the end
+                echo $output_script;
+            } else echo "<script>var tags_2 = [];</script>"; //no tag 2s are specified
             
             //output the heading class names into a java script so they can be accessed by toc.js
             if ( !(empty($classes_1))){           
                 $output_script = "<script>var classes_1 = [";
                 foreach ($classes_1_array as $class){ 
-                    //$class = str_replace(' ', '', $class);
                     $output_script .= "'" . $class . "', ";
                 }
                 $output_script .= "];</script>";
@@ -122,13 +142,15 @@ class tstn_toc_widget extends WP_Widget {
                 if ( empty($classes_2_array) )
                     $classes_2_array = explode(",", $classes_2);
                 foreach ($classes_2_array as $class){ 
-                    //$class = str_replace(' ', '', $class);
                     $output_script .= "'" . $class . "', ";
                 }
                 $output_script .= "];</script>";
                 $output_script = str_replace( ', ]', ']', $output_script ); //remove the extra comma at the end
                 echo $output_script;
             } else echo "<script>var classes_2 = [];</script>"; //no class names are specified
+            
+            //output the offset to use for highlighting links
+            echo "<script>var highlight_offset = $highlight_offset;</script>";
             
             //output the style for active links and fixed postion toc list
             echo    "<style>
