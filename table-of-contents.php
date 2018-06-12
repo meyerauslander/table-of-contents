@@ -163,6 +163,8 @@ class tstn_toc_widget extends WP_Widget {
                             top: 20px;
                         }
                     </style>";
+            //output the style needed for the toc items to be linked prorperly (test)
+            echo "<style>  .trst_toc_item { margin-top: -40px; padding-top: 40px !important; }</style>";
             
             //echo an empty list (to be populated by toc.js)
             echo '<ul class="tstn_toc_list widget_nav_menu"></ul>';
