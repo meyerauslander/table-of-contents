@@ -35,6 +35,58 @@ class tstn_toc_widget extends WP_Widget {
         register_widget( 'tstn_toc_widget' );
     }
     
+    /* return true for single posts that have toc classes or tags*/
+    /* In the future, this should be called by widget() to avoid duplicated code */
+    /* perhaps there should be a maus_toc_settings object that can be passed into the function by reference*/
+    public function is_toc_post() {
+
+        $classes_1=get_option('maus_toc_classes_1');
+        $classes_2=get_option('maus_toc_classes_2');
+        $tags_1=   get_option('maus_toc_html_tags_1');
+        $tags_2=   get_option('maus_toc_html_tags_2');
+
+        $has_classes=false;
+        $has_tags=false;
+
+        $cont=get_the_content();  //get content to check for toc tags.
+        //check if it has any toc classes if so set $has_classes
+        if ( !(empty($classes_1)) ){
+            $classes_1_array = explode(",", $classes_1);
+            foreach ($classes_1_array as $class){
+                //if ($has_classes=strpos( $cont, $class)){
+                if ($has_classes=preg_match("/<.*class=[\"\'].*\b$class\b.*[\"\'].*>/",$cont)){
+                    break;
+                }
+            }
+        }
+        if (!$has_classes && !(empty($classes_2) )){//it may only have subclasses 
+            $classes_2_array = explode(",", $classes_2);
+            foreach ($classes_2_array as $class){
+                if ($has_classes=preg_match("/<.*class=[\"\'].*\b$class\b.*[\"\'].*>/",$cont)){
+                    break;
+                }
+            }
+        }
+
+        if (!$has_classes && !empty($tags_1)){
+            $tags_1_array=explode(",",$tags_1);
+            foreach ($tags_1_array as $tag){
+                if ($has_tags=preg_match("/<\b$tag\b.*>(.*)<\/$tag>/i", $cont)){
+                    break;
+                }
+            }
+        }
+        if (!$has_classes && !$has_tags && !empty($tags_2)){
+            $tags_2_array=explode(",",$tags_2);
+            foreach ($tags_2_array as $tag){
+                if ($has_tags=preg_match("/<\b$tag\b.*>(.*)<\/$tag>/i", $cont)){
+                    break;
+                }
+            }
+        }
+        return ($has_classes || $has_tags);
+    } //end of is_toc_post()
+    
     public function widget( $args, $instance ) {
         $classes_1=get_option('maus_toc_classes_1');
         $classes_2=get_option('maus_toc_classes_2');
@@ -163,7 +215,7 @@ class tstn_toc_widget extends WP_Widget {
                             top: 20px;
                         }
                     </style>";
-            //output the style needed for the toc items to be linked prorperly (test)
+//            output the style needed for the toc items to be linked prorperly 
             echo "<style>  .trst_toc_item { margin-top: -40px; padding-top: 40px !important; }</style>";
             
             //echo an empty list (to be populated by toc.js)
