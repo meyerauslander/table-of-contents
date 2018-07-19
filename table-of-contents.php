@@ -38,7 +38,7 @@ class tstn_toc_widget extends WP_Widget {
     /* return true for single posts that have toc classes or tags*/
     /* In the future, this should be called by widget() to avoid duplicated code */
     /* perhaps there should be a maus_toc_settings object that can be passed into the function by reference*/
-    public function is_toc_post() {
+    public static function is_toc_post() {
 
         $classes_1=get_option('maus_toc_classes_1');
         $classes_2=get_option('maus_toc_classes_2');
@@ -215,8 +215,8 @@ class tstn_toc_widget extends WP_Widget {
                             top: 20px;
                         }
                     </style>";
-//            output the style needed for the toc items to be linked prorperly 
-            echo "<style>  .trst_toc_item { margin-top: -40px; padding-top: 40px !important; }</style>";
+//            output the style needed for the toc items to be linked prorperly  (commented out since it's unnessary)
+//            echo "<style>  .trst_toc_item { margin-top: -40px; padding-top: 40px !important; }</style>";
             
             //echo an empty list (to be populated by toc.js)
             echo '<ul class="tstn_toc_list widget_nav_menu"></ul>';
