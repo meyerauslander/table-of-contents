@@ -224,6 +224,7 @@ class tstn_toc_widget extends WP_Widget {
         }  //end of widget output  
         else { //output empty arrays in order to avoid java script errors in the console
             echo "<script>  var tags_1 = [];
+                            var_tags_2 = [];
                             var classes_1 = [];
                             var classes_2 = [];
                   </script>";
