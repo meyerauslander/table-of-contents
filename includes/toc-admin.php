@@ -44,7 +44,7 @@ class maus_toc_info_manager {
             $classes_1              = "toc_heading_1, toc1";   
             $classes_2              = "toc_heading_2, toc2";
             $remove_class           = "toc_delete";
-            $highlight_offset       = 420; //in the future should be calculated based on site style
+            $highlight_offset       = 0; 
         }
         //always set these 2 defaults
         $highlight_color        = ($highlight_color != '') ? $highlight_color : get_background_color();
