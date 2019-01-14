@@ -107,7 +107,7 @@ var makeHighlights = function(){
         var calculateTocSections = function(){
             tocSectionOffsets = [];
             tocSections.each(function(index, section){
-                tocSectionOffsets.push(section.offsetTop);
+                tocSectionOffsets.push($(section).offset().top);
             })
         }
         calculateTocSections();
@@ -117,7 +117,8 @@ var makeHighlights = function(){
             var highlightIndex = 0;
             var foundIndex = false;         
             $.each(tocSectionOffsets, function(index, offset){
-                if (window.scrollY - highlight_offset >= offset - tocPadding){ //in my wordpress test page there as a 183 diffence between offsets and scrollY for each toc item
+                //if (window.scrollY - highlight_offset >= offset - tocPadding){ //in my wordpress test page there as a 183 diffence between offsets and scrollY for each toc item
+                if (window.scrollY >= offset - tocPadding){ 
                     foundIndex=true;                              //it's preferable to retreive this value from the css somewhere...
                     highlightIndex = index;
                 }
@@ -159,8 +160,8 @@ var scrollTo = function(e) {
     e.preventDefault();
     var elScrollTo = $(e.target).attr('href');
     var $el = $(elScrollTo);
-
-    $('body,html').animate({ scrollTop: $el.offset().top }, 400, 'swing', function() {
+    var scroll_pos = $el.offset().top;
+    $('html,body').animate({ scrollTop: scroll_pos }, 400, 'swing', function() {
         location.hash = elScrollTo;
     })
 }
